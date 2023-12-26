@@ -1,8 +1,17 @@
 
 import { useState } from 'react';
 import Highlight from 'react-highlight'
+import hljs from 'highlight.js'
+import javascript from 'highlight.js/lib/languages/javascript';
+import php from 'highlight.js/lib/languages/php';
+import java from 'highlight.js/lib/languages/java';
+import bash from 'highlight.js/lib/languages/bash';
 import link from '../assets/link.svg'
 // Component for the heading label
+hljs.registerLanguage('javascript', javascript);
+hljs.registerLanguage('php', php);
+hljs.registerLanguage('java', java);
+hljs.registerLanguage('cURL', bash);
 const HeadingLabel = ({ text }) => (
     <div className='absolute -top-2 self-center text-gray-700 z-[9999] font-mono text-sm px-5 py-1.5 rounded-t-md border border-gray-300'>
         {text}
@@ -55,25 +64,27 @@ function HowWork() {
 }, {
   icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg',
   name: 'javascript',
-  code: `// Use fetch to POST the data
+  code: `
 fetch(apiURL, {
-  method: 'POST', // Specify the method to use
+  method: 'POST', 
   headers: {
-    'Content-Type': 'application/json', // Specify the content type of the payload
+    'Content-Type': 'application/json',
   },
-  body: JSON.stringify(data), // Convert the JavaScript object to a JSON string
+  body: JSON.stringify(data),
 })
-.then(response => response.json()) // Parse JSON response
-.then(data => console.log('Success:', data)) // Handle success
-.catch((error) => console.error('Error:', error)); // Handle errors`
+.then(response => response.json())
+.then(data => console.log('Success:', data)) 
+.catch((error) => console.error('Error:', error));`
 }, {
   icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/php/php-original.svg',
   name: 'PHP',
   code: `<?php
 $ch = curl_init('apiURL');
 curl_setopt($ch, CURLOPT_POST, true);
-curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
-curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
+curl_setopt($ch, CURLOPT_POSTFIELDS,
+    json_encode($data));
+curl_setopt($ch, CURLOPT_HTTPHEADER,
+     array('Content-Type: application/json'));
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 $response = curl_exec($ch);
 curl_close($ch);
@@ -82,14 +93,16 @@ echo $response;
 }
 ,    {
         icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/java/java-original-wordmark.svg",
-        name: 'Java',
+        name: 'java',
         code: `HttpClient client = HttpClient.newHttpClient();
 HttpRequest request = HttpRequest.newBuilder()
     .uri(URI.create(apiURL))
-    .POST(HttpRequest.BodyPublishers.ofString(JSON.stringify(data)))
+    .POST(HttpRequest.BodyPublishers
+        .ofString(JSON.stringify(data)))
     .header("Content-Type", "application/json")
     .build();
-client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+client.sendAsync(request,
+    HttpResponse.BodyHandlers.ofString())
     .thenApply(HttpResponse::body)
     .thenAccept(System.out::println)
     .join();`
@@ -169,11 +182,17 @@ fetch(apiURL, {
 const StepCard = ({ stepNumber, title, description, code, language, render,multi,types,currentCode,setCurrentCode }) => (
     <div className='bg-white border mt-6 border-gray-400 shadow-md rounded-md'>
         <StepIndicator stepNumber={stepNumber} title={title} description={description} />
-        <div className='flex flex-row gap-4 ml-2'>
-            {multi && types.map(type => <div className='flex flex-row gap-1 border border-black px-2 py-1 rounded-xl items-center justify-center hover:bg-slate-200 transition-all w-fit cursor-pointer' onClick={() => setCurrentCode(type)} key={type.name}> <img width={30} src={type.icon} alt="" /> <p>{type.name}</p> </div>) }
+        <div className='flex flex-row mb-2 gap-4 ml-2'>
+            {multi && types.map(type => <div
+                className={`flex  flex-row gap-1 border border-gray-400 px-2 py-1 rounded-md items-center justify-center hover:bg-slate-200 transition-all w-fit cursor-pointer ${currentCode.name === type.name ? ' bg-[#00042A] text-[#4dafff]' : ''}`
+                }
+                onClick={() => setCurrentCode(type)} key={type.name}>
+                <img width={15} src={type.icon} alt="" />
+                <p>{type.name}</p>
+            </div>)}
         </div>
      {currentCode && multi && (
-            <Highlight language={currentCode.name}>
+             <Highlight className={`language-${currentCode.name === 'cURL'? 'bash': currentCode.name}`}>
                 {currentCode.code}
             </Highlight>
         )}
